@@ -32,7 +32,7 @@ const bucket = firebaseStorage.bucket('pies-6b41e.appspot.com');
 const upload = multer({storage: storage}).fields([{ name: 'reviews', maxCount: 1 }, { name: 'purchases', maxCount: 1 }])
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('./client/build'))
+  app.use(express.static('./client/dist'))
 
   const path = require('path')
   app.get('/*', (req, res) => {
