@@ -12,6 +12,8 @@ const googleStorage = require('@google-cloud/storage');
 const format = require('util').format
 const os = require('os')
 
+const keys = require('./config/keys')
+
 const app = express();
 
 const filesFolder = './tmp'
@@ -22,12 +24,18 @@ const storage = multer.diskStorage({
   }
 }) 
 
+if (process.env.NODE_ENV === 'production') {
+  fs.writeFileSync(keys.storageConfigPath, JSON.stringify(keys.storageConfig), function(err) {
+    console.log(err)
+  })
+}
+
 const firebaseStorage = googleStorage({
-  projectId: "pies-6b41e",
-  keyFilename: "./pies-7f3c660cbc34.json"
+  projectId: keys.firebaseProjectId,
+  keyFilename: keys.storageConfigPath
 });
 
-const bucket = firebaseStorage.bucket('pies-6b41e.appspot.com');
+const bucket = firebaseStorage.bucket(keys.storageBucket);
 
 const upload = multer({storage: storage}).fields([{ name: 'reviews', maxCount: 1 }, { name: 'purchases', maxCount: 1 }])
 
