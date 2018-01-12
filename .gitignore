@@ -17,3 +17,4 @@ yarn-error.log*
 # Keys to Firebase Storage
 storageConfig.json
 dev.js
+config.js

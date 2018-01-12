@@ -1,11 +1,13 @@
-const functions = require('firebase-functions');
-const googleStorage = require('@google-cloud/storage');
+const functions = require('firebase-functions')
+const googleStorage = require('@google-cloud/storage')
+
+const config = require('./config')
 
 const firebaseStorage = googleStorage({
-  projectId: "pies-6b41e",
-  keyFilename: "./storageConfig.json"
+  projectId: config.firebaseProjectId,
+  keyFilename: config.storageConfigPath
 });
-const bucket = firebaseStorage.bucket('pies-6b41e.appspot.com');
+const bucket = firebaseStorage.bucket(config.storageBucket)
 
 exports.cleanup = functions.https.onRequest((request, response) => {
   bucket.deleteFiles()
