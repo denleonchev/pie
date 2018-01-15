@@ -6,9 +6,10 @@ const googleStorage = require('@google-cloud/storage')
 
 const getColumn = require('../utils/getColumn')
 const keys = require('../config/keys')
+const requireAuth = require('../middlewares/requireAuth')
 
 module.exports = (app, upload) => {
-  app.post('/api/upload', upload, (req, res) => {
+  app.post('/api/upload', upload, requireAuth, (req, res) => {
     const firebaseStorage = googleStorage({
       projectId: keys.firebaseProjectId,
       keyFilename: keys.storageConfigPath
@@ -34,6 +35,30 @@ module.exports = (app, upload) => {
       })
     )
 
+    if (!req.files) {
+      res.statusMessage = 'No files were attached!'
+      res
+        .status(500)
+        .end()
+      return
+    }
+
+    if (!req.files.reviews || !req.files.purchases) {
+      res.statusMessage = 'You forgot to attach the second file'
+      res
+        .status(500)
+        .end()
+      return
+    }
+
+    if (req.files.reviews[0].originalname.split('.')[1] !== 'csv' || req.files.purchases[0].originalname.split('.')[1] !== 'csv') {
+      res.statusMessage = 'The both files should be correctly formed and in CSV format!'
+      res
+        .status(500)
+        .end()
+      return
+    }
+
     const reviewsPath = req.files.reviews[0].path
     const purchasesPath = req.files.purchases[0].path
   
@@ -50,6 +75,13 @@ module.exports = (app, upload) => {
           const reviewsEmailCol = getColumn(reviewsHeader, emailReg)
           const purchasesProductCol = getColumn(purchasesHeader, productReg)
           const purchasesEmailCol = getColumn(purchasesHeader, emailReg)
+          if (reviewsProductCol === -1 || reviewsEmailCol === -1 || purchasesProductCol === -1 || purchasesEmailCol === -1) {
+            res.statusMessage = 'You forgot to name the columns "Product ID" and "Email" properly'
+            res
+              .status(500)
+              .end()
+            return
+          }
   
           reviewsHeader.splice(reviewsProductCol, 0, 'Calculated Product ID')
           

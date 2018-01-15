@@ -4,10 +4,19 @@ const path = require('path');
 const uuidv1 = require('uuid/v1');
 const cookieSession = require('cookie-session')
 const fs = require('file-system')
+const bodyParser = require('body-parser')
 
 const keys = require('./config/keys')
 
 const app = express();
+
+app.use(bodyParser.json())
+app.use(cookieSession({
+  name: 'session',
+  keys: [keys.cookieKey],
+  maxAge: 12 * 60 * 60 * 1000
+}))
+
 
 const storage = multer.diskStorage({
   storage: multer.memoryStorage(),
@@ -24,11 +33,13 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 require('./routes/uploadRoute')(app, upload)
+require('./routes/authRoutes')(app)
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('./client/dist'))
   const path = require('path')
   app.get('/*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'dist', '200.html'))
+    res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'))
   })
 }
 

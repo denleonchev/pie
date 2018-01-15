@@ -1,8 +1,10 @@
 const os = require('os')
 
 module.exports = {
+  cookieKey: 'process.env.COOKIE_KEY',
   storageConfigPath: `${os.tmpdir()}/storageConfig.json`,
   firebaseProjectId: process.env.PROJECT_ID,
+  pass: process.env.PASS,
   storageBucket: process.env.STORAGE_BUCKET,
   storageConfig: {
     type: process.env.TYPE,
