@@ -8,7 +8,7 @@
         </md-field>
         <md-field :class="getValidationClass('pass')">
           <label>Password</label>
-          <md-input v-model="form.pass"></md-input>
+          <md-input v-model="form.pass" type="password"></md-input>
           <span class="md-error" v-if="!$v.form.pass.required">The password is required</span>
         </md-field>
         <md-button class="md-primary" type="submit">Login</md-button>
